@@ -15,10 +15,10 @@ export default function TopNavbar({ total }) {
             <button className="btn btn-outline-light btn-sm">
               <i className="fa-solid fa-house me-1"></i> Home
             </button>
-            <button className="btn btn-outline-light btn-sm">
+            <button className="btn btn-outline-light btn-sm" data-bs-toggle="modal"  data-bs-target="#loginModal">
               <i className="fa-solid fa-lock me-1"></i> Login
             </button>
-            <button className="btn btn-outline-light btn-sm">
+            <button className="btn btn-outline-light btn-sm" data-bs-toggle="modal"  data-bs-target="#registerModal">
               <i className="fa-solid fa-key me-1"></i> Registrar
             </button>
           </div>
