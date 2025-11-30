@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
+
 
 const formatearCLP = (monto) =>
   new Intl.NumberFormat('es-CL', {
@@ -7,8 +9,9 @@ const formatearCLP = (monto) =>
     currency: 'CLP',
   }).format(monto)
 
-export default function PizzaPage({ pizzas = [], onAdd }) {
+export default function PizzaPage({ pizzas = [] }) {
   const { id } = useParams()
+  const { addItem } = useCart()
 
   const pizza = useMemo(
     () => pizzas.find((p) => String(p.id) === String(id)),
@@ -63,7 +66,7 @@ export default function PizzaPage({ pizzas = [], onAdd }) {
               <div className="d-flex gap-2">
                 <button
                   className="btn btn-primary"
-                  onClick={() => onAdd?.(pizza)}
+                  onClick={() => addItem(pizza)}
                 >
                   <i className="fa-solid fa-cart-plus me-1" />
                   Agregar al carrito

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useCart } from '../context/CartContext'
 
 const formatearCLP = (monto) =>
   new Intl.NumberFormat('es-CL', {
@@ -7,7 +8,8 @@ const formatearCLP = (monto) =>
     currency: 'CLP',
   }).format(monto)
 
-export default function PizzaGrid({ pizzas = [], onAdd }) {
+export default function PizzaGrid({ pizzas = [] }) {
+  const { addItem } = useCart()
   return (
     <section className="py-5">
       <div className="container">
@@ -44,7 +46,7 @@ export default function PizzaGrid({ pizzas = [], onAdd }) {
 
                     <button
                       className="btn btn-primary btn-sm"
-                      onClick={() => onAdd?.(p)}
+                      onClick={() => addItem(p)}
                     >
                       <i className="fa-solid fa-cart-plus me-1" />
                       Agregar

@@ -2,15 +2,28 @@ import React from 'react'
 import Hero from '../components/Hero'
 import PizzaGrid from '../components/PizzaGrid'
 
-export default function HomePage({ pizzas, onAdd, onViewDetail }) {
+export default function HomePage({ pizzas, loading, error }) {
+  if (loading) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-danger" role="status" />
+        <p className="mt-3 text-muted">Cargando pizzas...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container py-5">
+        <div className="alert alert-danger">{error}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex-fill">
-      <Hero titulo="Pizzeria Mamma Mia!" />
-      <PizzaGrid
-        pizzas={pizzas}
-        onAdd={onAdd}
-        onViewDetail={onViewDetail}
-      />
+      <Hero titulo="Pizzería Mamma Mia!" />
+      <PizzaGrid pizzas={pizzas} />
     </div>
   )
 }

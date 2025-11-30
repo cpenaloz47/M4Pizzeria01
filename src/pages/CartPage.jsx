@@ -1,5 +1,5 @@
-// src/pages/CartPage.jsx
 import React from 'react'
+import { useCart } from '../context/CartContext'
 
 const formatearCLP = (monto) =>
   new Intl.NumberFormat('es-CL', {
@@ -7,7 +7,8 @@ const formatearCLP = (monto) =>
     currency: 'CLP',
   }).format(monto)
 
-export default function CartPage({ items, total, onIncrease, onDecrease }) {
+export default function CartPage() {
+  const { items, total, increase, decrease } = useCart()
   const hayItems = items.length > 0
 
   const handlePagar = () => {
@@ -51,7 +52,7 @@ export default function CartPage({ items, total, onIncrease, onDecrease }) {
                         <button
                           type="button"
                           className="btn btn-outline-secondary"
-                          onClick={() => onDecrease?.(item.id)}
+                          onClick={() => decrease?.(item.id)}
                         >
                           -
                         </button>
@@ -61,7 +62,7 @@ export default function CartPage({ items, total, onIncrease, onDecrease }) {
                         <button
                           type="button"
                           className="btn btn-outline-secondary"
-                          onClick={() => onIncrease?.(item.id)}
+                          onClick={() => increase?.(item.id)}
                         >
                           +
                         </button>
