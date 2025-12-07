@@ -1,10 +1,15 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -15,13 +20,20 @@ export default function LoginPage() {
       setError('Debe completar todos los campos')
       return
     }
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
+
+    const result = login(email, password)
+
+    if (!result.ok) {
+      setError(result.message || 'Credenciales incorrectas')
       return
     }
 
-    console.log('Inicio de sesión:', { email, password })
     setSuccess(true)
+
+    // Pequeña pausa para mostrar el mensaje y luego ir al Home
+    setTimeout(() => {
+      navigate('/')
+    }, 500)
   }
 
   return (
@@ -31,9 +43,10 @@ export default function LoginPage() {
           <div className="card shadow-sm border-0 rounded-4">
             <div className="card-header bg-dark text-white rounded-top-4 py-3">
               <h5 className="mb-0">
-                <i className="fa-solid fa-lock me-2" /> Iniciar sesión
+                <i className="fa-solid fa-lock me-2"></i> Iniciar sesión
               </h5>
             </div>
+
             <div className="card-body px-4 py-4">
               {error && (
                 <div className="alert alert-danger py-2 mb-3 text-start">
@@ -48,7 +61,9 @@ export default function LoginPage() {
 
               <form onSubmit={handleSubmit} className="text-start">
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">Correo electrónico</label>
+                  <label className="form-label fw-semibold">
+                    Correo electrónico
+                  </label>
                   <input
                     type="email"
                     className="form-control"
@@ -60,7 +75,9 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">Contraseña</label>
+                  <label className="form-label fw-semibold">
+                    Contraseña
+                  </label>
                   <input
                     type="password"
                     className="form-control"
@@ -76,6 +93,10 @@ export default function LoginPage() {
                     Ingresar
                   </button>
                 </div>
+
+                <p className="mt-3 small text-muted">
+                  <strong>TIP:</strong> usa <code>cpenaloz@gmail.com</code> / <code>123456</code>
+                </p>
               </form>
             </div>
           </div>

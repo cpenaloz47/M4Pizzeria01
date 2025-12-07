@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate  } from 'react-router-dom'
 
 import TopNavbar from './components/TopNavbar'
 import Footer from './components/Footer'
@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 import { useCart } from './context/CartContext'
+import { useAuth } from './context/AuthContext'
 
 function AppInner() {
   const [pizzasApi, setPizzasApi] = useState([])
@@ -21,6 +22,7 @@ function AppInner() {
   const [error, setError] = useState('')
 
   const { clearCart } = useCart()
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     async function cargar() {
@@ -62,22 +64,51 @@ function AppInner() {
 
         <main className="flex-fill">
           <Routes>
+            {/* Home protegido: solo si está autenticado */}
             <Route
               path="/"
               element={
-                <HomePage
-                  pizzas={pizzasApi}
-                  loading={loading}
-                  error={error}
-                />
+                isAuthenticated ? (
+                  <HomePage
+                    pizzas={pizzasApi}
+                    loading={loading}
+                    error={error}
+                  />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
               }
             />
 
+            {/* Login y Register siempre accesibles */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/carrito" element={<CartPage />} />
-            <Route path="/pizza/:id" element={<PizzaPage pizzas={pizzasApi} />} />
-            <Route path="/profile" element={<ProfilePage />} />
+
+            {/* Estas Rutas requieren login */}
+            <Route path="/carrito"
+                   element={ isAuthenticated ? <CartPage /> : <Navigate to="/login" replace />  } />
+
+            <Route
+              path="/pizza/:id"
+              element={ isAuthenticated ? (
+                        <PizzaPage />
+                        ) : (
+                        <Navigate to="/login" replace />
+                        )
+                     } />
+
+            <Route
+              path="/profile"
+              element={
+                isAuthenticated ? (
+                  <ProfilePage />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+
+            {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

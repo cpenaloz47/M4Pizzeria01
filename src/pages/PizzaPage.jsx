@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react'
+// src/pages/PizzaPage.jsx
+import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-
 
 const formatearCLP = (monto) =>
   new Intl.NumberFormat('es-CL', {
@@ -9,22 +9,50 @@ const formatearCLP = (monto) =>
     currency: 'CLP',
   }).format(monto)
 
-export default function PizzaPage({ pizzas = [] }) {
+export default function PizzaPage() {
   const { id } = useParams()
   const { addItem } = useCart()
 
-  const pizza = useMemo(
-    () => pizzas.find((p) => String(p.id) === String(id)),
-    [pizzas, id]
-  )
+  const [pizza, setPizza] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  if (!pizza) {
+  useEffect(() => {
+    async function cargarPizza() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const res = await fetch(`/api/pizzas/${id}`)
+        if (!res.ok) throw new Error('Error al cargar la pizza')
+        const data = await res.json()
+        setPizza(data)
+        console.log(data)
+      } catch (err) {
+        console.error(err)
+        setError('No se pudo cargar la pizza solicitada')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    cargarPizza()
+  }, [id])
+
+  if (loading) {
     return (
-      <div className="container my-5 text-center">
-        <h3 className="mb-3">Pizza no encontrada</h3>
-        <p className="text-muted mb-4">
-          La pizza que buscas no existe o ya no está disponible.
-        </p>
+      <div className="container text-center py-5">
+        <div className="spinner-border text-danger" role="status" />
+        <p className="mt-3">Cargando pizza...</p>
+      </div>
+    )
+  }
+
+  if (error || !pizza) {
+    return (
+      <div className="container text-center py-5">
+        <h3>No se pudo cargar la pizza</h3>
+        <p className="text-muted mb-4">{error}</p>
         <Link to="/" className="btn btn-primary">
           <i className="fa-solid fa-house me-2" />
           Volver al Home
@@ -42,7 +70,7 @@ export default function PizzaPage({ pizzas = [] }) {
             <div className="col-12 col-md-6">
               <img
                 src={pizza.img}
-                alt={pizza.nombre}
+                alt={pizza.name}
                 className="img-fluid rounded shadow-sm"
                 style={{ maxHeight: '380px', objectFit: 'cover', width: '100%' }}
               />
@@ -50,15 +78,15 @@ export default function PizzaPage({ pizzas = [] }) {
 
             {/* Detalle */}
             <div className="col-12 col-md-6">
-              <h2 className="fw-bold mb-3">{pizza.nombre}</h2>
+              <h2 className="fw-bold mb-3">{pizza.name}</h2>
 
               <h5 className="text-danger fw-bold mb-3">
-                {formatearCLP(pizza.precio)}
+                {formatearCLP(pizza.price)}
               </h5>
 
               <h6 className="fw-semibold mb-2">Ingredientes:</h6>
               <ul className="list-unstyled small mb-4">
-                {pizza.ingredientes?.map((ing, i) => (
+                {pizza.ingredients?.map((ing, i) => (
                   <li key={i}>🍕 {ing}</li>
                 ))}
               </ul>
