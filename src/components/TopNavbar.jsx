@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-import { useAuth } from '../context/AuthContext'
+import { useUser } from '../context/UserContext'
 
 export default function TopNavbar({ onReset }) {
   const { total, clearCart } = useCart()
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, email, logout } = useUser()
   const navigate = useNavigate()
 
   const formatearCLP = (monto) =>
@@ -51,6 +51,10 @@ export default function TopNavbar({ onReset }) {
 
           {isAuthenticated && (
             <>
+              <span className="text-light small ms-3 d-flex align-items-center">
+              <i className="fa-solid fa-user me-1"></i>
+                {email}
+              </span>
               <Link
                 to="/"
                 className="btn btn-outline-light btn-sm"

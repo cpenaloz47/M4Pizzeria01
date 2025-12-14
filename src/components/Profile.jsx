@@ -13,7 +13,7 @@ export default function Profile({ email, onLogout }) {
 
             <p className="text-center mb-4">
               <strong>Email:</strong><br />
-              {email}
+             {email || '—'}
             </p>
 
             <div className="d-flex justify-content-center">

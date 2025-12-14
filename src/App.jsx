@@ -14,7 +14,7 @@ import ProfilePage from './pages/ProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 import { useCart } from './context/CartContext'
-import { useAuth } from './context/AuthContext'
+import { useUser } from './context/UserContext'
 
 function AppInner() {
   const [pizzasApi, setPizzasApi] = useState([])
@@ -22,7 +22,7 @@ function AppInner() {
   const [error, setError] = useState('')
 
   const { clearCart } = useCart()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated } = useUser()
 
   useEffect(() => {
     async function cargar() {

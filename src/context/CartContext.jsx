@@ -6,6 +6,39 @@ const CartContext = createContext(null)
 export function CartProvider({ children }) {
   const [items, setItems] = useState([]) // { id, nombre, precio, img, ingredientes, cantidad }
 
+const checkout = async (token) => {
+  if (!token) {
+    throw new Error('No autenticado')
+  }
+
+  const payload = {
+    cart: items.map((item) => ({
+      id: item.id,
+      quantity: item.cantidad,
+    })),
+  }
+
+  console.log('Checkout payload:', payload)
+
+  const res = await fetch('/api/checkouts', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`, 
+    },
+    body: JSON.stringify(payload),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    console.error('Checkout error:', res.status, text)
+    throw new Error('No se pudo procesar el pago')
+  }
+
+  return await res.json().catch(() => ({}))
+}
+
+
   const total = useMemo(
     () => items.reduce((acc, item) => acc + item.precio * item.cantidad, 0),
     [items]
@@ -45,7 +78,7 @@ export function CartProvider({ children }) {
 
   const clearCart = () => setItems([])
 
-  const value = { items, total, addItem, increase, decrease, clearCart }
+  const value = { items, total, addItem, increase, decrease, clearCart, checkout }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

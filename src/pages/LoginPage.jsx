@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useUser } from '../context/UserContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -9,9 +9,9 @@ export default function LoginPage() {
   const [success, setSuccess] = useState(false)
 
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login } = useUser()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess(false)
@@ -20,20 +20,22 @@ export default function LoginPage() {
       setError('Debe completar todos los campos')
       return
     }
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
 
-    const result = login(email, password)
+    const result = await login(email, password)
 
     if (!result.ok) {
-      setError(result.message || 'Credenciales incorrectas')
+      setError(result.message || 'Usuario o contraseña incorrectos')
       return
     }
 
     setSuccess(true)
-
-    // Pequeña pausa para mostrar el mensaje y luego ir al Home
     setTimeout(() => {
       navigate('/')
-    }, 500)
+    }, 400)
   }
 
   return (
@@ -43,7 +45,7 @@ export default function LoginPage() {
           <div className="card shadow-sm border-0 rounded-4">
             <div className="card-header bg-dark text-white rounded-top-4 py-3">
               <h5 className="mb-0">
-                <i className="fa-solid fa-lock me-2"></i> Iniciar sesión
+                <i className="fa-solid fa-lock me-2" /> Iniciar sesión
               </h5>
             </div>
 
@@ -61,9 +63,7 @@ export default function LoginPage() {
 
               <form onSubmit={handleSubmit} className="text-start">
                 <div className="mb-3">
-                  <label className="form-label fw-semibold">
-                    Correo electrónico
-                  </label>
+                  <label className="form-label fw-semibold">Correo electrónico</label>
                   <input
                     type="email"
                     className="form-control"
@@ -75,9 +75,7 @@ export default function LoginPage() {
                 </div>
 
                 <div className="mb-4">
-                  <label className="form-label fw-semibold">
-                    Contraseña
-                  </label>
+                  <label className="form-label fw-semibold">Contraseña</label>
                   <input
                     type="password"
                     className="form-control"
@@ -95,7 +93,7 @@ export default function LoginPage() {
                 </div>
 
                 <p className="mt-3 small text-muted">
-                  <strong>TIP:</strong> usa <code>cpenaloz@gmail.com</code> / <code>123456</code>
+                  Estos datos ahora se validan contra <code>/api/auth/login</code>.
                 </p>
               </form>
             </div>

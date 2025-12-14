@@ -1,8 +1,12 @@
 import React from 'react'
 import Hero from '../components/Hero'
 import PizzaGrid from '../components/PizzaGrid'
+import { useUser } from '../context/UserContext'
 
 export default function HomePage({ pizzas, loading, error }) {
+
+  const { email } = useUser()
+
   if (loading) {
     return (
       <div className="container py-5 text-center">
